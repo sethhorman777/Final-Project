@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wordle Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      width: 100%;
+      background-color: #1f2937; /* Dark gray */
+      padding: 10px 20px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar .title {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .navbar .links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .navbar .links a:hover {
+      text-decoration: underline;
+    }
+
+    /* Page Layout */
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      margin-top: 20px;
+    }
+
+    .instructions {
+      max-width: 300px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .instructions h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .instructions ul {
+      padding-left: 20px;
+      list-style-type: disc;
+    }
+
+    .instructions ul li {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .game-area {
+      text-align: center;
+    }
+
+    /* Game Title */
+    .game-title {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #374151;
+    }
+
+    /* Grid and Keyboard Styling */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 50px);
+      gap: 10px;
+      margin: 0 auto 20px;
+    }
+
+    .tile {
+      width: 50px;
+      height: 50px;
+      border: 2px solid #d1d5db;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      text-transform: uppercase;
+      background-color: white;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .tile.correct {
+      background-color: #6aaa64; /* Green */
+      color: white;
+    }
+
+    .tile.present {
+      background-color: #c9b458; /* Yellow */
+      color: white;
+    }
+
+    .tile.absent {
+      background-color: #787c7e; /* Gray */
+      color: white;
+    }
+
+    .keyboard {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .key {
+      width: 40px;
+      height: 50px;
+      background-color: #d1d5db;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background-color 0.3s ease;
+    }
+
+    .key.enter {
+      width: 80px;
+      background-color: #93c5fd; /* Blue */
+    }
+
+    .key.delete {
+      width: 80px;
+      background-color: #f87171; /* Red */
+    }
+    
+
+    .key.absent {
+      background-color: #787c7e; /* Gray */
+      color: white;
+    }
+      .key.present {
+      background-color: #c9b458; /* Yellow */
+      color: white;
+    }
+
+      .key.correct {
+      background-color: #6aaa64; /* Green */
+      color: white;
+    }
+    
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <div class="navbar">
+    <div class="title">Wordle Game</div>
+    <div class="links">
+      <a href="../Index.html">Resume</a>
+      <a href="Thai Food.html">Scratch Page</a>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="container">
+    <!-- Instructions -->
+    <div class="instructions" id="instructions">
+      <h2>How to Play</h2>
+      <ul>
+        <li>Guess the 5-letter word in 6 tries or less.</li>
+        <li>After each guess, the tiles will change color:</li>
+        <ul>
+          <li><span style="color: #6aaa64; font-weight: bold;">Green:</span> Letter is correct and in the right position.</li>
+          <li><span style="color: #c9b458; font-weight: bold;">Yellow:</span> Letter is correct but in the wrong position.</li>
+          <li><span style="color: #787c7e; font-weight: bold;">Gray:</span> Letter is not in the word.</li>
+        </ul>
+        <li>Use the on-screen keyboard to input guesses.</li>
+        <li>Good luck!</li>
+      </ul>
+    </div>
+
+    <!-- Game Area -->
+    <div class="game-area" id="game">
+      <div class="game-title">Wordle Game</div>
+      <div class="grid" id="grid">
+        <!-- Tiles will be generated dynamically -->
+      </div>
+      <div class="keyboard">
+        <div class="keyboard-row" id="row1"></div>
+        <div class="keyboard-row" id="row2"></div>
+        <div class="keyboard-row" id="row3"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* Wordle Game Logic - Same as previously provided */
+    const WORDS = ["apple", "grape", "peach", "berry", "mango", "lemon", "melon", "plums", "olive"]; 
+    let WORD = getRandomWord();
+    const grid = document.getElementById("grid");
+    const row1 = document.getElementById("row1");
+    const row2 = document.getElementById("row2");
+    const row3 = document.getElementById("row3");
+    let currentRow = 0;
+    let currentCol = 0;
+    let guesses = Array.from({ length: 6 }, () => Array(5).fill(""));
+
+    const keys = {
+      row1: ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+      row2: ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+      row3: ["enter", "z", "x", "c", "v", "b", "n", "m", "delete"],
+    };
+
+    function getRandomWord() {
+      return WORDS[Math.floor(Math.random() * WORDS.length)];
+    }
+
+    function setupGame() {
+      // Clear grid and keyboard
+      grid.innerHTML = "";
+      row1.innerHTML = "";
+      row2.innerHTML = "";
+      row3.innerHTML = "";
+      currentRow = 0;
+      currentCol = 0;
+      guesses = Array.from({ length: 6 }, () => Array(5).fill(""));
+
+      // Create grid
+      for (let i = 0; i < 6 * 5; i++) {
+        const tile = document.createElement("div");
+        tile.classList.add("tile");
+        grid.appendChild(tile);
+      }
+
+      // Create keyboard
+      Object.entries(keys).forEach(([row, keyList]) => {
+        const keyboardRow = row === "row1" ? row1 : row === "row2" ? row2 : row3;
+        keyList.forEach((key) => {
+          const button = document.createElement("button");
+          button.textContent = key;
+          button.classList.add("key");
+          if (key === "enter") button.classList.add("enter");
+          if (key === "delete") button.classList.add("delete");
+          button.onclick = () => handleKey(key);
+          keyboardRow.appendChild(button);
+        });
+      });
+    }
+
+    function handleKey(key) {
+      if (key === "enter") {
+        checkGuess();
+      } else if (key === "delete") {
+        deleteLetter();
+      } else if (/^[a-z]$/.test(key)) {
+        addLetter(key);
+      }
+    }
+
+    function addLetter(letter) {
+      if (currentCol < 5 && currentRow < 6) {
+        guesses[currentRow][currentCol] = letter;
+        const tile = grid.children[currentRow * 5 + currentCol];
+        tile.textContent = letter;
+        currentCol++;
+      }
+    }
+
+    function deleteLetter() {
+      if (currentCol > 0) {
+        currentCol--;
+        guesses[currentRow][currentCol] = "";
+        const tile = grid.children[currentRow * 5 + currentCol];
+        tile.textContent = "";
+      }
+    }
+
+    function checkGuess() {
+  if (currentCol < 5) {
+    alert("Not enough letters!");
+    return;
+  }
+
+  const guess = guesses[currentRow].join("");
+  const keyButtons = document.querySelectorAll(".key");
+  
+  // Create a map to track the occurrences of each letter in the target word
+  const letterCounts = {};
+  for (let letter of WORD) {
+    letterCounts[letter] = (letterCounts[letter] || 0) + 1;
+  }
+
+  // First pass: Check for correct letters (green)
+  for (let i = 0; i < 5; i++) {
+    const tile = grid.children[currentRow * 5 + i];
+    const letter = guess[i];
+    const keyButton = Array.from(keyButtons).find((key) => key.textContent === letter);
+
+    if (guess[i] === WORD[i]) {
+      tile.classList.add("correct");
+      if (keyButton) keyButton.classList.add("correct");
+      letterCounts[letter]--; // Decrease count for correctly guessed letter
+    }
+  }
+
+  // Second pass: Check for present letters (yellow) or absent letters (gray)
+  for (let i = 0; i < 5; i++) {
+    const tile = grid.children[currentRow * 5 + i];
+    const letter = guess[i];
+    const keyButton = Array.from(keyButtons).find((key) => key.textContent === letter);
+
+    if (!tile.classList.contains("correct")) {
+      if (WORD.includes(letter) && letterCounts[letter] > 0) {
+        tile.classList.add("present");
+        if (keyButton && !keyButton.classList.contains("correct")) {
+          keyButton.classList.add("present");
+        }
+        letterCounts[letter]--; // Decrease count for present letter
+      } else {
+        tile.classList.add("absent");
+        if (keyButton) keyButton.classList.add("absent");
+      }
+    }
+  }
+
+  // Check if the player has won
+  if (guess === WORD) {
+    alert("Congratulations! You guessed the word!");
+    resetGame();
+    return;
+  }
+
+  currentRow++;
+  currentCol = 0;
+
+  // Check if the player has used all attempts
+  if (currentRow === 6) {
+    alert(`Game over! The word was "${WORD}"`);
+    resetGame();
+  }
+}
+
+
+    function resetGame() {
+      WORD = getRandomWord();
+      setupGame();
+    }
+
+    // Initialize the game on page load
+    setupGame();
+  </script>
+</body>
+</html>

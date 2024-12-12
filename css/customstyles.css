@@ -1,0 +1,70 @@
+body{
+    background-color:rgb(155, 201, 253);
+    color:black;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+
+h4{
+    color:black;
+    font-family:Arial, Helvetica, sans-serif;
+    font-style:italic;
+    text-decoration:underline;
+}
+
+h1 {
+Color: Black;
+font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif
+
+}
+
+.navbar{
+    background-color:rgb(58, 58, 71);
+    padding: 10px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    color:white;
+}
+
+.navbar a{
+    color:white;
+}
+
+.navbar a:hover{
+    background-color:#575757;
+    border-radius:5px;
+}
+
+
+
+
+.sidebar{
+    background-color: rgb(58, 58, 71);
+    width:175px;
+    height: 63%;
+    position:fixed;
+    top: 60px;
+    left: 0;
+    box-sizing:border-box;
+    color: white;
+}
+
+
+.sidebar a{
+color:white;
+
+}
+
+
+.sidebar a:hover{
+background-color: rgb(155, 201, 253);
+border-radius: 5ppx;
+}
+
+
+
+.maincontent{
+
+    margin-left:190px;
+    padding:10px;
+}
